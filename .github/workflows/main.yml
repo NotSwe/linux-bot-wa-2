@@ -65,34 +65,30 @@ jobs:
             npm install
           fi
 
-      - name: "6. Run Bot (Auto-Restart & Limit 5 Jam)"
-        run: |
-          # Ini versi Linux dari script PowerShell lu. 
-          # Bot jalan di depan (foreground) biar log/QR code kelihatan di tab Actions.
-          # Kalau crash, otomatis restart dalam 5 detik.
-          timeout 5h bash -c '
-            while true; do
-              echo "Menjalankan Bot..."
-              npm start
-              echo "Bot crash atau berhenti, restart dalam 5 detik..."
-              sleep 5
-            done
-          ' || true
+      - name: "6. Run Bot (Test 2 Menit)"
+  run: |
+    npm start &
+    BOT_PID=$!
 
-      - name: "7. Auto-Backup Session & File"
-        if: always()
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
-          
-          if git diff-index --quiet HEAD --; then
-            echo "Tidak ada perubahan file (Session aman)."
-          else
-            echo "Ditemukan perubahan file. Melakukan commit..."
-            git commit -m "Auto-backup data bot (5 jam) [skip ci]"
-            git push origin HEAD:main
-          fi
+    echo "Bot berjalan selama 2 menit untuk pairing..."
+    sleep 120
+
+    echo "Menghentikan bot..."
+    kill $BOT_PID || true
+
+     - name: "7. Auto-Backup Session & File"
+  if: always()
+  run: |
+    git config --global user.name "github-actions[bot]"
+    git config --global user.email "github-actions[bot]@users.noreply.github.com"
+    git add -A
+
+    if git diff-index --quiet HEAD --; then
+      echo "Tidak ada perubahan file."
+    else
+      git commit -m "Test auto backup [skip ci]"
+      git push origin HEAD:main
+    fi
 
       - name: "8. Auto-Up (Trigger Siklus Berikutnya)"
         if: ${{ !cancelled() }}
