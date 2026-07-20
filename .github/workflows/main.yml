@@ -66,21 +66,17 @@ jobs:
           npm install
 
 
-      - name: "6. Telegram Monitor + Heartbeat"
+          - name: "6. Telegram Monitor + Heartbeat"
         run: |
-
           (
           OFFSET=0
 
           while true
           do
 
-            UPDATE=$(curl -s \
-            "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/getUpdates?offset=$OFFSET")
-
+            UPDATE=$(curl -s "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/getUpdates?offset=$OFFSET")
 
             if echo "$UPDATE" | grep -q '"/status"'; then
-
               MSG="🟢 BOT STATUS
 
 Status: ONLINE
@@ -90,9 +86,7 @@ Watchdog: ACTIVE
 Heartbeat: ACTIVE
 Time: $(date)"
 
-
             elif echo "$UPDATE" | grep -q '"/health"'; then
-
               MSG="💚 HEALTH CHECK
 
 System: HEALTHY
@@ -101,34 +95,43 @@ Backup: ENABLED
 Auto Restart: ENABLED
 Time: $(date)"
 
-
             else
-
               sleep 5
               continue
-
             fi
 
-
-            curl -s \
-            "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            curl -s "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
             -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
             -d text="$MSG"
 
 
             ID=$(echo "$UPDATE" | grep -o '"update_id":[0-9]*' | tail -1 | cut -d: -f2)
 
-            if [ ! -z "$ID" ]; then
+            if [ -n "$ID" ]; then
               OFFSET=$((ID+1))
             fi
-
 
             sleep 5
 
           done
-
           ) &
 
+
+          (
+          while true
+          do
+            sleep 1800
+
+            curl -s "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d text="💓 HEARTBEAT
+
+BOT masih aktif
+Workflow: ${{ github.workflow }}
+Time: $(date)"
+
+          done
+          ) &
 
 
           (
