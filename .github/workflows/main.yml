@@ -78,7 +78,6 @@ jobs:
 
           mkdir -p storage/session
 
-          # Jangan backup node_modules
           git add -A
           git reset HEAD node_modules 2>/dev/null || true
 
@@ -89,7 +88,6 @@ jobs:
 
             git commit -m "Auto-backup data bot (5 jam) [skip ci]"
 
-            # Hindari konflik jika branch berubah
             git pull --rebase origin main || true
 
             git push origin HEAD:main
@@ -101,4 +99,21 @@ jobs:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
           echo "Memicu workflow berikutnya..."
-          gh workflow run "${{ github.workflow }}" --ref main
+
+          MAX_RETRY=20
+          RETRY_DELAY=30
+
+          for ((i=1; i<=MAX_RETRY; i++)); do
+            echo "Percobaan ke-$i/$MAX_RETRY..."
+
+            if gh workflow run "${{ github.workflow }}" --ref main; then
+              echo "Workflow berhasil dipicu."
+              exit 0
+            fi
+
+            echo "Gagal. Tunggu ${RETRY_DELAY} detik..."
+            sleep $RETRY_DELAY
+          done
+
+          echo "Gagal memicu workflow setelah $MAX_RETRY percobaan."
+          exit 1
