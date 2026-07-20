@@ -5,7 +5,7 @@ on:
 
 concurrency:
   group: rdp-wa-loop
-  cancel-in-progress: true
+  cancel_in-progress: true
 
 jobs:
   run-bot:
@@ -37,11 +37,14 @@ jobs:
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
 
       - name: "4. Setup Cloudflare WARP"
         run: |
           curl -fsSL https://pkg.cloudflareclient.com/pubkey.gpg | sudo gpg --yes --dearmor -o /usr/share/keyrings/cloudflare-warp.gpg
+
           echo "deb [signed-by=/usr/share/keyrings/cloudflare-warp.gpg] https://pkg.cloudflareclient.com/ $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/cloudflare.list
 
           sudo apt update -q
@@ -51,103 +54,149 @@ jobs:
           warp-cli --accept-tos mode warp
           warp-cli --accept-tos connect
 
+          sleep 3
+
+          echo "IP:"
+          curl -4 ifconfig.me
+
 
       - name: "5. Install Dependencies"
         run: |
           npm install
 
 
-      - name: "6. Telegram Start"
+      - name: "6. Telegram Start Notification"
         run: |
           curl -s \
           "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
           -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-          -d text="🟢 BOT STARTED"
-
-
-      - name: "7. Telegram Status Listener"
-        run: |
-          (
-          OFFSET=0
-
-          while true
-          do
-
-            UPDATE=$(curl -s \
-            "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/getUpdates?offset=$OFFSET")
-
-
-            if echo "$UPDATE" | grep -q "/status"; then
-
-              curl -s \
-              "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
-              -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-              -d text="🟢 BOT STATUS
-
-Status: ONLINE
+          -d text="🟢 BOT STARTED
 Workflow: ${{ github.workflow }}
-Runner: Ubuntu
 Time: $(date)"
 
-            fi
 
-
-            ID=$(echo "$UPDATE" | grep -o '"update_id":[0-9]*' | tail -1 | cut -d: -f2)
-
-            if [ -n "$ID" ]; then
-              OFFSET=$((ID+1))
-            fi
-
-
-            sleep 5
-
-          done
-          ) &
-
-
-      - name: "8. Run Bot"
+      - name: "7. Run Bot (5 Jam + Monitoring Dashboard)"
         run: |
           timeout 5h bash -c '
+
+          START=$(date +%s)
+
           while true
           do
-            echo "Starting Bot..."
+
+            NOW=$(date +%s)
+            UPTIME=$((NOW-START))
+
+            CPU=$(top -bn1 | grep "Cpu(s)" | awk "{print 100-\$8}")
+            RAM=$(free -m | awk "/Mem:/ {printf \"%.1f\", \$3/\$2*100}")
+            DISK=$(df -h / | awk "NR==2 {print \$5}")
+            LOAD=$(uptime | awk -F"load average:" "{print \$2}")
+
+
+            echo ""
+            echo "======================================"
+            echo "        🖥️ BOT MONITOR DASHBOARD"
+            echo "======================================"
+            echo ""
+            echo "🟢 STATUS     : ONLINE"
+            echo "⏱️ UPTIME     : ${UPTIME}s"
+            echo "🔥 CPU USAGE  : ${CPU}%"
+            echo "🧠 RAM USAGE  : ${RAM}%"
+            echo "💾 DISK       : ${DISK}"
+            echo "📊 LOAD       : ${LOAD}"
+            echo "🕒 TIME       : $(date)"
+            echo ""
+            echo "======================================"
+
 
             npm start
 
-            curl -s \
-            "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
-            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-            -d text="⚠️ BOT RESTART"
+
+            echo ""
+            echo "⚠️ BOT STOPPED"
+            echo "Restart dalam 5 detik..."
 
             sleep 5
+
           done
+
           ' || true
 
 
-      - name: "9. Backup Session"
+      - name: "8. Cleanup Log"
         if: always()
         run: |
+          find . -name "*.log" -type f -mtime +7 -delete || true
+
+
+      - name: "9. Auto Backup Session & File"
+        if: always()
+        run: |
+
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
           git add -A
+
           git reset HEAD node_modules 2>/dev/null || true
+
 
           if git diff --cached --quiet
           then
-            echo "No changes"
+
+            echo "Tidak ada perubahan."
+
           else
+
             git commit -m "Auto backup bot [skip ci]"
+
             git pull --rebase origin main || true
+
             git push origin HEAD:main
+
           fi
 
 
-      - name: "10. Trigger Next Cycle"
+      - name: "10. Auto Up Next Cycle"
         if: ${{ !cancelled() }}
 
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
 
         run: |
-          gh workflow run "${{ github.workflow }}" --ref main || true
+
+          MAX_RETRY=20
+          RETRY_DELAY=30
+
+
+          for ((i=1;i<=MAX_RETRY;i++))
+          do
+
+            echo "Trigger cycle berikutnya percobaan $i"
+
+
+            if gh workflow run "${{ github.workflow }}" --ref main
+            then
+
+              curl -s \
+              "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+              -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+              -d text="🔄 Workflow berikutnya berhasil dijalankan"
+
+              exit 0
+
+            fi
+
+
+            sleep $RETRY_DELAY
+
+          done
+
+
+          curl -s \
+          "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+          -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+          -d text="❌ Workflow gagal lanjut"
+
+
+          exit 1
