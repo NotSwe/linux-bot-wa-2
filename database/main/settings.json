@@ -27,7 +27,7 @@
   "publicAdmin": false,
   "_lastEnergiDefault": 99999,
   "_lastEnergiPremium": 99999999,
-  "lastLimitReset": "2026-07-21T17:00:00.009Z",
+  "lastLimitReset": "2026-07-22T17:00:00.005Z",
   "onlyThisGroup": null,
   "autoJpm": {
     "enabled": false,
@@ -63,7 +63,9 @@
   "scheduledMessages": [],
   "pushAutoVcf": false,
   "selfGroups": [],
-  "ownerNames": {},
+  "ownerNames": {
+    "62895428283397": "@23648811364542"
+  },
   "publicGroups": [],
   "autoRead": false,
   "contacts": {
@@ -23694,6 +23696,10 @@
     "628561361419@s.whatsapp.net": {
       "jid": "628561361419@s.whatsapp.net",
       "name": "#Zahidaliffalatah"
+    },
+    "6289673765513@s.whatsapp.net": {
+      "jid": "6289673765513@s.whatsapp.net",
+      "name": "MRX"
     }
   },
   "notiflimit": false,

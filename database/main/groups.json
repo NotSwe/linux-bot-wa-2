@@ -24518,8 +24518,8 @@
   "120363427618821749@g.us": {
     "chatStats": {
       "6288212949095@s.whatsapp.net": {
-        "count": 13,
-        "lastChat": 1784544933963,
+        "count": 22,
+        "lastChat": 1784733103759,
         "name": "idk"
       },
       "6285133216497@s.whatsapp.net": {
@@ -24533,8 +24533,8 @@
         "name": "mochy"
       },
       "6289673765513@s.whatsapp.net": {
-        "count": 33,
-        "lastChat": 1784643944947,
+        "count": 35,
+        "lastChat": 1784732641352,
         "name": "MRX"
       },
       "6283116101192@s.whatsapp.net": {
@@ -53064,5 +53064,47 @@
         "name": "MADZZ STORE"
       }
     }
+  },
+  "120363429590385575@g.us": {
+    "welcome": false,
+    "goodbye": false,
+    "leave": false,
+    "jid": "120363429590385575@g.us",
+    "name": "Unknown Group",
+    "antilink": false,
+    "antitoxic": false,
+    "mute": false,
+    "game": true,
+    "rpg": true,
+    "warnings": [],
+    "chat": {}
+  },
+  "120363409411447626@g.us": {
+    "welcome": false,
+    "goodbye": false,
+    "leave": false,
+    "jid": "120363409411447626@g.us",
+    "name": "Unknown Group",
+    "antilink": false,
+    "antitoxic": false,
+    "mute": false,
+    "game": true,
+    "rpg": true,
+    "warnings": [],
+    "chat": {}
+  },
+  "120363410296353710@g.us": {
+    "welcome": false,
+    "goodbye": false,
+    "leave": false,
+    "jid": "120363410296353710@g.us",
+    "name": "Unknown Group",
+    "antilink": false,
+    "antitoxic": false,
+    "mute": false,
+    "game": true,
+    "rpg": true,
+    "warnings": [],
+    "chat": {}
   }
 }
