@@ -83,7 +83,9 @@ async function imageToWebp(buffer) {
 function videoToWebp(buffer) {
   return new Promise((resolve, reject) => {
     const tmpDir = getTempDir();
-    const inputPath = path.join(tmpDir, `input_${Date.now()}.mp4`);
+    const isGif = buffer.slice(0, 4).toString("hex") === "47494638";
+    const ext = isGif ? "gif" : "mp4";
+    const inputPath = path.join(tmpDir, `input_${Date.now()}.${ext}`);
     const outputPath = path.join(tmpDir, `output_${Date.now()}.webp`);
     if (!buffer || buffer.length < 1000)
       return reject(new Error("Invalid video buffer"));
@@ -222,19 +224,25 @@ async function extendSocket(sock) {
 
   sock.sendImageAsSticker = async (jid, input, m, options = {}) => {
     const buffer = await resolveInput(input);
+    const isWebp = buffer.slice(0, 4).toString("hex") === "52494646";
     let webpBuffer;
-    try {
-      webpBuffer = await (
-        await getSharp()
-      )(buffer)
-        .resize(512, 512, {
-          fit: "contain",
-          background: { r: 0, g: 0, b: 0, alpha: 0 },
-        })
-        .webp({ quality: 80 })
-        .toBuffer();
-    } catch (err) {
-      throw new Error("Failed to convert image: " + err.message);
+    
+    if (isWebp) {
+      webpBuffer = buffer;
+    } else {
+      try {
+        webpBuffer = await (
+          await getSharp()
+        )(buffer)
+          .resize(512, 512, {
+            fit: "contain",
+            background: { r: 0, g: 0, b: 0, alpha: 0 },
+          })
+          .webp({ quality: 80 })
+          .toBuffer();
+      } catch (err) {
+        throw new Error("Failed to convert image: " + err.message);
+      }
     }
     try {
       webpBuffer = await addExifToWebp(webpBuffer, {
@@ -259,7 +267,14 @@ async function extendSocket(sock) {
 
   sock.sendVideoAsSticker = async (jid, input, m, options = {}) => {
     const buffer = await resolveInput(input);
-    let webpBuffer = await videoToWebp(buffer);
+    const isWebp = buffer.slice(0, 4).toString("hex") === "52494646";
+    let webpBuffer;
+    
+    if (isWebp) {
+      webpBuffer = buffer;
+    } else {
+      webpBuffer = await videoToWebp(buffer);
+    }
     try {
       webpBuffer = await addExifToWebp(webpBuffer, {
         packname: options.packname ?? DEFAULT_METADATA.packname,

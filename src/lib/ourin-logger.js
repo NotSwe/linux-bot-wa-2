@@ -11,12 +11,39 @@ const cGreen = chalk.greenBright;
 const cWhite = chalk.whiteBright;
 const cGray = chalk.gray;
 
-// Helper to create linux-style brackets
 function makeTag(label, isSuccess = false, isError = false) {
-  const text = label.toUpperCase().substring(0, 4).padStart(4, " ");
-  if (isSuccess) return `${cGray("[")} ${cGreen(text)} ${cGray("]")}`;
-  if (isError) return `${cGray("[")} ${cWhite(text)} ${cGray("]")}`; // Error uses white inside brackets for visibility, or green? User said green for check/highlights, white for important text. Let's use White for error labels or Gray.
-  return `${cGray("[")} ${cWhite(text)} ${cGray("]")}`;
+  const l = label.toUpperCase().trim();
+  let icon = "•";
+  let colorFn = chalk.white;
+
+  if (isSuccess || l === "OK" || l === "DONE") {
+    icon = "✔";
+    colorFn = chalk.green;
+  } else if (isError || l === "FAIL" || l === "ERR" || l === "NO") {
+    icon = "✖";
+    colorFn = chalk.red;
+  } else if (l === "WARN" || l === "WN") {
+    icon = "⚠";
+    colorFn = chalk.yellow;
+  } else if (l === "INFO") {
+    icon = "ℹ";
+    colorFn = chalk.blue;
+  } else if (l === "BOOT") {
+    icon = "❖";
+    colorFn = chalk.magenta;
+  } else if (l === "SYS") {
+    icon = "⚙";
+    colorFn = chalk.cyan;
+  } else if (l === "WAIT") {
+    icon = "⟳";
+    colorFn = chalk.yellow;
+  } else if (l === "DBG") {
+    icon = "🐛";
+    colorFn = chalk.white;
+  }
+
+  const text = l.substring(0, 4).padEnd(4, " ");
+  return `  ${colorFn(icon)}  ${colorFn(text)}`;
 }
 
 const SYM = {
@@ -40,7 +67,7 @@ function writeLog(kind, label, detail = "") {
   const tag = tags[kind] || SYM.info;
 
   // Format: [  OK  ] Started OURIN AI
-  const msg = `${tag} ${cWhite(label)}${detail ? " " + cGray(detail) : ""}`;
+  const msg = `${tag} ${chalk.cyanBright(label)}${detail ? " " + cWhite(detail) : ""}`;
   console.log(msg);
 }
 
@@ -104,11 +131,21 @@ async function runLoader(text = "memuat", options = {}) {
 }
 
 async function playBootSequence(info = {}) {
-  const { name = "OURIN AI", version = "1.0.0", mode = "public" } = info;
+  const { name = "OURIN", version = "3.3", mode = "public" } = info;
   console.log("");
-  console.log(`${cGray("---")}`);
-  console.log(`${makeTag("BOOT", true)} ${cWhite(`Starting ${name} v${version}`)}`);
-  console.log(`${makeTag("INFO")} ${cGray(`Mode: ${mode}`)}`);
+  console.log(chalk.cyan(`
+          ██████╗ ██╗   ██╗██████╗ ██╗███╗   ██╗
+         ██╔═══██╗██║   ██║██╔══██╗██║████╗  ██║
+         ██║   ██║██║   ██║██████╔╝██║██╔██╗ ██║
+         ██║   ██║██║   ██║██╔══██╗██║██║╚██╗██║
+         ╚██████╔╝╚██████╔╝██║  ██║██║██║ ╚████║
+          ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝
+`));
+  console.log(`         ${chalk.magenta.bold("►")} ${chalk.white("OURIN MULTI-DEVICE BOT")} ${chalk.gray(`v${version}`)}`);
+  console.log(`         ${chalk.magenta("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}`);
+  console.log("");
+  console.log(`${makeTag("BOOT", true)} ${cWhite(`Memulai Sistem Utama...`)}`);
+  console.log(`${makeTag("INFO")} ${cWhite(`Mode: ${chalk.cyan(mode)}`)}`);
 }
 
 function getTypeTag(msgType, isNewsletter) {
@@ -148,7 +185,7 @@ function logMessage(info) {
   if (!message || message.trim() === "" || !sender) return;
 
   const num = sender.replace("@s.whatsapp.net", "");
-  let msg = message.replace(/\n/g, " ").substring(0, 100) + (message.length > 100 ? "..." : "");
+  let msg = message;
 
   msg = msg.replace(/@(\d{10,})/g, (match, num) => {
     const lidJid = num + "@lid";
@@ -168,13 +205,41 @@ function logMessage(info) {
   const senderName = pushName || num;
 
   console.log("");
-  console.log(`  ${cGray("╭─〔")} ${cWhite("Ini pesan dari")} ${chatType === "private" ? cWhite("Private Chat") : cWhite("grup")} ${cWhite(location)} ${cGray("〕───⬣")}`);
-  console.log(`  ${cGray("│")} ${cWhite("👤 Nama:")} ${cWhite(senderName)}`);
-  console.log(`  ${cGray("│")} ${cWhite("📞 Nomor:")} ${cWhite("+" + num)}`);
-  console.log(`  ${cGray("│")} ${cWhite("📅 Waktu:")} ${cGray(date)} ${cWhite(time)}`);
-  console.log(`  ${cGray("│")} ${cWhite("💬 Tipe:")} ${cGray(`[${typeTag}]`)}`);
-  console.log(`  ${cGray("│")} ${cWhite("💬 " + msg)}`);
-  console.log(`  ${cGray("╰───────⬣")}`);
+  console.log(`  ${cWhite("╭─")} ${chalk.bgWhiteBright("Hey, ada pesan masuk nih :3")} ${cGray("•")} ${chatType === "private" ? chalk.yellow("Private") : chalk.whiteBright("Dari Grup") + " " + chalk.bgCyanBright(location)}`);
+  console.log(`  ${cWhite("│")}  👤 ${chalk.greenBright(senderName)} ${cGray(`(${num})`)}`);
+  console.log(`  ${cWhite("│")}  📱 ${chalk.yellowBright(info.device || "Unknown")} ${chalk.red(`• ${time} • ${typeTag}`)}`);
+  const maxWidth = 55;
+  const msgLines = [];
+
+  msg.split('\n').forEach(line => {
+    let currentLine = "";
+    line.split(' ').forEach(word => {
+      if ((currentLine + word).length > maxWidth) {
+        if (currentLine) {
+          msgLines.push(currentLine.trimEnd());
+          currentLine = word + " ";
+        } else {
+          const chunks = word.match(new RegExp(`.{1,${maxWidth}}`, 'g')) || [];
+          chunks.slice(0, -1).forEach(c => msgLines.push(c));
+          currentLine = (chunks[chunks.length - 1] || "") + " ";
+        }
+      } else {
+        currentLine += word + " ";
+      }
+    });
+    if (currentLine) {
+      msgLines.push(currentLine.trimEnd());
+    }
+  });
+
+  msgLines.forEach((line, index) => {
+    if (index === 0) {
+      console.log(`  ${cWhite("│")}  💬 ${chalk.whiteBright(line)}`);
+    } else {
+      console.log(`  ${cWhite("│")}     ${chalk.whiteBright(line)}`);
+    }
+  });
+  console.log(`  ${cWhite("╰─")}`);
 }
 
 function logPlugin(name, category) {
@@ -184,11 +249,11 @@ function logPlugin(name, category) {
 
 function logConnection(status, info = "") {
   if (status === "connected") {
-    console.log(`${makeTag("OK", true)} ${cWhite("Connected")} ${cGray(info ? `— ${info}` : "")}`);
+    console.log(`${makeTag("OK", true)} ${cWhite("Connected")} ${cWhite(info ? `— ${info}` : "")}`);
   } else if (status === "connecting") {
-    console.log(`${makeTag("WAIT")} ${cWhite("Connecting")} ${cGray(info ? `— ${info}` : "")}`);
+    console.log(`${makeTag("WAIT")} ${cWhite("Connecting")} ${cWhite(info ? `— ${info}` : "")}`);
   } else {
-    console.log(`${makeTag("FAIL", false, true)} ${cWhite("Disconnected")} ${cGray(info ? `— ${info}` : "")}`);
+    console.log(`${makeTag("FAIL", false, true)} ${cWhite("Disconnected")} ${cWhite(info ? `— ${info}` : "")}`);
   }
 }
 

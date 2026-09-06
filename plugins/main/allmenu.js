@@ -82,7 +82,7 @@ function getCommandSymbols(cmdName) {
   return symbols.length > 0 ? " " + symbols.join(" ") : "";
 }
 function getContextInfo(botConfig, m, thumbBuffer) {
-  const saluranId = botConfig.saluran?.id || "120363186130999681@newsletter";
+  const saluranId = botConfig.saluran?.id || "120363400911374213@newsletter";
   const saluranName =
     botConfig.saluran?.name || botConfig.bot?.name || "Ourin-AI";
   const saluranLink = botConfig.saluran?.link || "";
@@ -349,7 +349,7 @@ async function handler(m, { sock, config: botConfig, db, uptime }) {
                   isForwarded: true,
                   forwardingScore: 9,
                   forwardedNewsletterMessageInfo: {
-                    newsletterJid: config.saluran?.id || "120363186130999681@newsletter",
+                    newsletterJid: config.saluran?.id || "120363400911374213@newsletter",
                     newsletterName: config.saluran?.name || config.bot?.name || "Ourin-AI",
                     serverMessageId: 127,
                   },
@@ -424,7 +424,7 @@ async function handler(m, { sock, config: botConfig, db, uptime }) {
                   isForwarded: true,
                   forwardingScore: 9,
                   forwardedNewsletterMessageInfo: {
-                    newsletterJid: config.saluran?.id || "120363186130999681@newsletter",
+                    newsletterJid: config.saluran?.id || "120363400911374213@newsletter",
                     newsletterName: config.saluran?.name || config.bot?.name || "Ourin-AI",
                     serverMessageId: 127,
                   },

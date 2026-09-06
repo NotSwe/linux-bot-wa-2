@@ -4,24 +4,30 @@ import * as ownerPremiumDb from "./src/lib/ourin-premium-db.js";
 //  utamakan baca object config sampai bawah
 const config = {
   info: {
-    website: "https://fallxd-store-alpha.vercel.app",
+    website: "https://firefly.maiku.my.id",
     grupwa: "https://chat.whatsapp.com/xxxx",
   },
 
   owner: {
-    name: "pais", // Nama owner
-    number: ["6288212949095"], // Format: 628xxx (tanpa + atau 0)
+    name: "Zann", // Nama owner
+    number: ["62xxxxxxxxxxx"], // Format: 628xxx (tanpa + atau 0)
   },
 
   session: {
-    pairingNumber: "62881011965054", // Nomor WA yang akan di-pair, ini penting
+    pairingNumber: "62xxxxxxxxxxxxx", // Nomor WA yang akan di-pair, ini penting
     usePairingCode: true, // true = Pairing Code, false = QR Code
   },
 
+  fake_call: {
+    active: false,
+    usePairing: true,
+    dir: "./session_voip",
+  },
+
   bot: {
-    name: "justfriend mania", // Nama bot
-    version: "3.3", // Versi bot
-    developer: "pais", // Nama developer
+    name: "𝗢𝗨𝗥𝗜𝗡 𝗠𝗗", // Nama bot
+    version: "3.3.1", // Versi bot
+    developer: "Zann", // Nama developer
   },
 
   assets: {
@@ -46,7 +52,6 @@ const config = {
     "ourin-mp3": "./assets/audio/ourin-mp3.mp3",
     "ourin-font": "./assets/ourin-font.ttf",
     "ourin-kertas": "./assets/image/ourin-kertas.jpg",
-    "test": "./assets/image/test.webp"
   },
 
   mode: "public",
@@ -100,8 +105,8 @@ const config = {
   },
 
   sticker: {
-    packname: "𝗢𝗨𝗥𝗜𝗡 𝗗𝗘𝗟𝗨𝗫𝗘", // Nama pack sticker
-    author: "FallZx Infinity ", // Author sticker
+    packname: "𝗢𝗨𝗥𝗜𝗡 𝗠𝗗", // Nama pack sticker
+    author: "Zann", // Author sticker
   },
 
   saluran: {

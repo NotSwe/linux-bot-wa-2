@@ -61,7 +61,7 @@ function startDailyLimitReset(options = {}) {
   activeCronJobs.set("dailyLimitReset", job);
   logger.info(
     "Scheduler",
-    `Daily limit reset enabled at ${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")} (${TZ})`,
+    `Reset limit harian nyala jam ${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")} (${TZ})`,
   );
 }
 
@@ -183,7 +183,7 @@ function loadScheduledMessages(sock) {
         scheduleMessage(task, sock);
       }
     }
-    logger.info("Scheduler", `Loaded ${savedTasks.length} scheduled messages`);
+    logger.info("Scheduler", `Sukses muat ${savedTasks.length} pesan terjadwal`);
   } catch (error) {
     logger.error(
       "Scheduler",
@@ -201,7 +201,7 @@ function stopAllSchedulers() {
   activeCronJobs.clear();
   if (groupScheduleSock) groupScheduleSock = null;
   sewaSock = null;
-  logger.info("Scheduler", "All schedulers stopped");
+  logger.info("Scheduler", "Semua scheduler udah dimatikan");
 }
 
 function getSchedulerStatus() {
@@ -546,7 +546,7 @@ async function startGroupScheduleChecker(sock) {
   activeCronJobs.set("groupSchedule", job);
   logger.info(
     "Scheduler",
-    "Group schedule checker started (CronJob, every minute)",
+    "Cek jadwal grup nyala (tiap menit)",
   );
 }
 
@@ -666,7 +666,7 @@ async function startSewaChecker(sock) {
 
   const job = new CronJob("*/10 * * * *", doCheck, null, true, TZ);
   activeCronJobs.set("sewaChecker", job);
-  logger.info("Scheduler", "Sewa checker enabled (CronJob, every 10 minutes)");
+  logger.info("Scheduler",    "Sistem cek sewa jalan (tiap 10 menit)",);
 }
 
 function startAutoBioChecker(sock) {
@@ -719,7 +719,7 @@ function startAutoBioChecker(sock) {
   activeCronJobs.set("autoBioChecker", {
     stop: () => clearInterval(timerId)
   });
-  logger.info("Scheduler", `AutoBio checker enabled (Interval, every ${intervalMs / 1000}s)`);
+  logger.info("Scheduler", `AutoBio aktif (update tiap ${intervalMs / 1000}s)`);
 }
 
 export {

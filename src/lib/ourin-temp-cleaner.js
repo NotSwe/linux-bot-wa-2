@@ -31,7 +31,7 @@ function startTempCleaner() {
     }, CLEAN_INTERVAL)
 
     if (cleanerTimer.unref) cleanerTimer.unref()
-    logger.success('temp', `auto-clean every ${CLEAN_INTERVAL / 60000}m`)
+    logger.success('temp', `Bakal bersih-bersih file tiap ${CLEAN_INTERVAL / 60000} menit`)
 }
 
 function stopTempCleaner() {

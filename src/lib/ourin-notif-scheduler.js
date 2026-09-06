@@ -85,7 +85,7 @@ function buildCronJobs() {
         }
     }
 
-    logger.info('NotifScheduler', `${notifCronJobs.size} notification CronJobs active (${TZ})`)
+    logger.info('NotifScheduler', `Ada ${notifCronJobs.size} alarm notifikasi yang lagi jalan nih (${TZ})`)
 }
 
 async function processEntry(entry, jam, type, key, db, dateStr) {
@@ -121,11 +121,11 @@ async function processEntry(entry, jam, type, key, db, dateStr) {
         db.setting(settingKey, allData)
 
         cleanOldSentKeys(lastSent)
-        logger.info('NotifScheduler', `Sent ${type} notification to ${entry.chatJid} (${jam})`)
+        logger.info('NotifScheduler', `Sukses ngirim alarm ${type} ke ${entry.chatJid} (${jam})`)
 
         await new Promise(r => setTimeout(r, 300))
     } catch (err) {
-        logger.error('NotifScheduler', `Failed to send ${type} to ${entry.chatJid}: ${err.message}`)
+        logger.error('NotifScheduler', `Gagal ngirim alarm ${type} ke ${entry.chatJid}: ${err.message}`)
     }
 }
 
@@ -226,7 +226,7 @@ function initNotifScheduler(socketInstance) {
     }, null, true, TZ)
 
     buildCronJobs()
-    logger.info('NotifScheduler', 'Meal & sleep notification scheduler started (CronJob, precise per-time)')
+    logger.info('NotifScheduler', 'Sistem alarm makan & tidur otomatis udah jalan mantap')
 }
 
 function stopNotifScheduler() {
@@ -235,7 +235,7 @@ function stopNotifScheduler() {
         refreshJob.stop()
         refreshJob = null
     }
-    logger.info('NotifScheduler', 'Notification scheduler stopped')
+    logger.info('NotifScheduler', 'Sistem alarm udah dimatiin')
 }
 
 export {

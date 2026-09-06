@@ -160,7 +160,7 @@ let srcWatcher = null;
 function startSrcWatcher(srcPath) {
   if (srcWatcher) srcWatcher.close();
 
-  logger.system("dev", "Hot-Reload watcher active for src");
+  logger.system("dev", "Pantauan hot-reload buat src udah jalan bosku");
 
   srcWatcher = fs.watch(srcPath, { recursive: true }, (eventType, filename) => {
     if (!filename || !filename.endsWith(".js")) return;
@@ -236,7 +236,7 @@ function setupAntiCrash() {
     process.exit(0);
   });
 
-  logger.success("system", "Anti-Crash Protection is Active");
+  logger.success("system", "Sistem anti-crash nyala, aman terkendali 😎");
 }
 
 async function main() {
@@ -255,7 +255,7 @@ async function main() {
   await initDatabase(dbPath);
   const db = getDatabase();
 
-  await spinText("system", "Starting local asset cache server...", { tone: "accent" });
+  await spinText("system", "Lagi muat aset lokal bentar...", { tone: "accent" });
   await preloadAssets(config.assets);
 
   const savedMode = db.setting("botMode");
@@ -270,12 +270,12 @@ async function main() {
   const bCount = Array.isArray(savedBanned) ? savedBanned.length : 0;
   logger.success(
     "database",
-    `Database initialized | Mode: ${config.mode} | Premium: ${pCount} | Banned: ${bCount}`,
+    `Database sukses ke-load | Mode: ${config.mode} | Premium: ${pCount} | Banned: ${bCount}`,
   );
 
   const pluginsPath = path.join(process.cwd(), "plugins");
   const pluginCount = await loadPlugins(pluginsPath);
-  logger.success("plugin", `${pluginCount} modules loaded successfully`);
+  logger.success("plugin", `Sukses muat ${pluginCount} plugin!`);
 
   if (config.dev?.enabled && config.dev?.watchPlugins)
     startDevWatcher(pluginsPath);
@@ -287,13 +287,13 @@ async function main() {
   initScheduler(config);
 
   const bootTime = Date.now() - startTime;
-  logger.success("boot", `System initialized in ${bootTime}ms`);
+  logger.success("boot", `Bot nyala mantap dalam ${bootTime}ms 🚀`);
   divider();
   await spinText("network", "Opening WhatsApp connection tunnel...", {
     duration: 900,
     tone: "accent",
   });
-  logConnection("connecting", "Establishing session and handshake protocol");
+  logConnection("connecting", "Lagi nyambungin ke WhatsApp nih...");
   console.log("");
 
   await startConnection({
@@ -402,7 +402,8 @@ async function main() {
         startMemoryMonitor();
         startTempCleaner();
         startDailyPruner();
-        logger.success("ready", `All subsystems are fully operational${devLabel}`);
+        logger.success("YEYYYY", `Semua sistem udah jalan mantap, langsug saja🚀`);
+        logger.success("NOTE", `Kalau ada error. mohon dimaklumi, soalnnya bukan bot bagus :)`);
         divider();
       }
     },

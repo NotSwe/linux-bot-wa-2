@@ -27,15 +27,15 @@ async function handler(m, { sock, text }) {
   await m.react("🕕");
 
   try {
-    const res = await axios.get(`https://api.cuki.biz.id/api/search/spotify?apikey=cuki-x&query=${encodeURIComponent(text)}&limit=5`);
+    const res = await axios.get(`https://api.nexray.eu.cc/search/spotify?q=${encodeURIComponent(text)}`);
     const data = res.data;
 
-    if (!data.status || !data.data || !data.data.results || data.data.results.length === 0) {
+    if (!data.status || !data.result || data.result.length === 0) {
       await m.react("❌");
       return m.reply(`⚠️ *Maaf, lagu tidak ditemukan!* \n\nAku sudah mencari dengan kata kunci *${text}* tapi tidak ada hasil di Spotify. Coba gunakan judul yang lebih spesifik ya.`);
     }
 
-    const results = data.data.results;
+    const results = data.result.slice(0, 5);
     const firstResult = results[0];
 
     let contentText = `✨ *HASIL PENCARIAN SPOTIFY* ✨\n\nHalo! Aku berhasil menemukan beberapa lagu berdasarkan kata kunci *${text}*. Berikut adalah daftar teratasnya:\n\n`;
@@ -51,7 +51,7 @@ async function handler(m, { sock, text }) {
 
     let thumbnailBuffer = null;
     try {
-      const imageResponse = await axios.get(firstResult.thumb, { responseType: "arraybuffer" });
+      const imageResponse = await axios.get(firstResult.thumbnail, { responseType: "arraybuffer" });
       thumbnailBuffer = await sharp(imageResponse.data).resize(300, 170).jpeg().toBuffer();
     } catch (e) {
     }

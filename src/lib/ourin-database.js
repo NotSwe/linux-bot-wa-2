@@ -157,7 +157,7 @@ class Database {
       this.ready = true;
       logger.success(
         "database",
-        "Multi-file database siap (debounced write setiap 5s)",
+        "Database siap dipakai (autosave 5s)",
       );
       return this;
     } catch (error) {
@@ -170,8 +170,8 @@ class Database {
           stats: {},
           sewa: { enabled: false, groups: {} },
         },
-        write: () => {},
-        read: () => {},
+        write: () => { },
+        read: () => { },
       };
       this.ready = true;
       return this;
@@ -188,7 +188,7 @@ class Database {
     const flush = () => {
       try {
         this.flushAll();
-      } catch {}
+      } catch { }
     };
     process.on("exit", flush);
     process.on("beforeExit", flush);
@@ -201,7 +201,7 @@ class Database {
   flushDirty() {
     for (const key of Object.keys(this.dirty)) {
       if (this.dirty[key] && this.stores[key]) {
-        this._asyncWrite(key).catch(() => {});
+        this._asyncWrite(key).catch(() => { });
       }
     }
   }
@@ -225,11 +225,11 @@ class Database {
       await fs.promises.writeFile(temp, json, "utf-8");
       await fs.promises.rename(temp, filePath);
       this.dirty[key] = false;
-    } catch {}
+    } catch { }
     this._writing.delete(key);
     if (this._pendingWrite.has(key)) {
       this._pendingWrite.delete(key);
-      this._asyncWrite(key).catch(() => {});
+      this._asyncWrite(key).catch(() => { });
     }
   }
 
@@ -238,7 +238,7 @@ class Database {
       try {
         this.stores[key].write();
         this.dirty[key] = false;
-      } catch {}
+      } catch { }
     }
   }
 
@@ -246,7 +246,7 @@ class Database {
     for (const store of Object.values(this.stores)) {
       try {
         store.read();
-      } catch {}
+      } catch { }
     }
   }
 
@@ -422,7 +422,7 @@ class Database {
       const isPremiumUser = config.isPremium(jid);
       if (isOwnerUser && ownerEnergi === -1) return -1;
       if (isPremiumUser && premiumEnergi === -1) return -1;
-    } catch {}
+    } catch { }
 
     user.energi = Math.max(0, (user.energi ?? 0) + amount);
     this.setUser(jid, user);
@@ -597,11 +597,11 @@ class Database {
       if (!fs.existsSync(filePath)) continue;
       try {
         fs.copyFileSync(filePath, path.join(backupFolder, file));
-      } catch {}
+      } catch { }
       try {
         fs.writeFileSync(filePath, JSON.stringify(defaults, null, 2), "utf-8");
         resetCount++;
-      } catch {}
+      } catch { }
     }
 
     for (const [key, { defaults }] of Object.entries(fileMap)) {

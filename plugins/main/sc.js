@@ -24,14 +24,14 @@ async function handler(m, { sock }) {
         caption: `🌾 Halo kak *${m.pushName}*
         
 Untuk asli dari bot ini, kamu bisa dapatkan melalui link, nanti kamu tinggal cari kata kunci *OURIN MD*`,
-        footer: "💬 Link Download Disini YGY , JANGAN LUPA SUBSCRIBE",
+        footer: "💬 Link ini nanti akan mengarahkan kamu ke Youtube *Zanspiw*",
         interactiveButtons: [
             {
                 name: "cta_url",
                 buttonParamsJson: JSON.stringify({
-                    display_text: "🥐 Script Ourin MD Deluxe V3.3 NO ENC",
-                    url: "https://youtu.be/iEullsLragQ?si=dvucnZZH7-T4lFon",
-                    merchant_url: "https://youtu.be/iEullsLragQ?si=dvucnZZH7-T4lFon"
+                    display_text: "🥐 Kunjungi Youtube Zanspiw",
+                    url: "https://youtube.com/@JanpiwWok",
+                    merchant_url: "https://youtube.com/@JanpiwWok"
                 })
             }
         ]

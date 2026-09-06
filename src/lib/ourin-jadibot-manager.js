@@ -69,19 +69,33 @@ function createJadibotStore() {
         for (const msg of messages || []) {
           const jid = msg.key?.remoteJid;
           if (!jid) continue;
-          if (!this.messages.has(jid)) this.messages.set(jid, new Map());
+          if (!this.messages.has(jid)) {
+            if (this.messages.size >= 100) {
+              const firstKey = this.messages.keys().next().value;
+              if (firstKey) this.messages.delete(firstKey);
+            }
+            this.messages.set(jid, new Map());
+          }
           const chat = this.messages.get(jid);
           if (msg.key?.id) {
             chat.set(msg.key.id, msg);
-            if (chat.size > 200) {
+            if (chat.size > 20) {
               const keys = [...chat.keys()];
-              for (let i = 0; i < keys.length - 150; i++) chat.delete(keys[i]);
+              for (let i = 0; i < keys.length - 15; i++) chat.delete(keys[i]);
             }
           }
           if (!this.chats.has(jid)) {
+            if (this.chats.size >= 100) {
+              const firstChatKey = this.chats.keys().next().value;
+              if (firstChatKey) this.chats.delete(firstChatKey);
+            }
             this.chats.set(jid, { id: jid });
           }
           if (msg.pushName && jid.endsWith("@s.whatsapp.net")) {
+            const contactKeys = Object.keys(this.contacts);
+            if (contactKeys.length >= 200) {
+              delete this.contacts[contactKeys[0]];
+            }
             this.contacts[jid] = {
               ...this.contacts[jid],
               notify: msg.pushName,
@@ -91,12 +105,22 @@ function createJadibotStore() {
       });
       ev.on("chats.upsert", (chats) => {
         for (const chat of chats || []) {
-          if (chat.id) this.chats.set(chat.id, chat);
+          if (chat.id) {
+            if (this.chats.size >= 100 && !this.chats.has(chat.id)) {
+              const firstChatKey = this.chats.keys().next().value;
+              if (firstChatKey) this.chats.delete(firstChatKey);
+            }
+            this.chats.set(chat.id, chat);
+          }
         }
       });
       ev.on("contacts.upsert", (contacts) => {
         for (const contact of contacts || []) {
           if (contact.id) {
+            const contactKeys = Object.keys(this.contacts);
+            if (contactKeys.length >= 200 && !this.contacts[contact.id]) {
+              delete this.contacts[contactKeys[0]];
+            }
             this.contacts[contact.id] = {
               ...this.contacts[contact.id],
               ...contact,

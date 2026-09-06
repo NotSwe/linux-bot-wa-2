@@ -293,7 +293,7 @@ function initSholatScheduler(socketInstance) {
   schedulePrayerTimes();
   logger.info(
     "SholatScheduler",
-    "Prayer time scheduler started (CronJob, precise per-prayer)",
+    "Jadwal waktu sholat otomatis udah nyala ya bosku (Realtime)",
   );
 }
 
@@ -303,7 +303,7 @@ function stopSholatScheduler() {
     dailyRefreshJob.stop();
     dailyRefreshJob = null;
   }
-  logger.info("SholatScheduler", "Prayer time scheduler stopped");
+  logger.info("SholatScheduler", "Jadwal waktu sholat udah dimatiin");
 }
 
 export {
