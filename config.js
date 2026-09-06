@@ -9,12 +9,12 @@ const config = {
   },
 
   owner: {
-    name: "Zann", // Nama owner
-    number: ["62xxxxxxxxxxx"], // Format: 628xxx (tanpa + atau 0)
+    name: "pais", // Nama owner
+    number: ["6288212949095"], // Format: 628xxx (tanpa + atau 0)
   },
 
   session: {
-    pairingNumber: "62xxxxxxxxxxxxx", // Nomor WA yang akan di-pair, ini penting
+    pairingNumber: "62881011965054", // Nomor WA yang akan di-pair, ini penting
     usePairingCode: true, // true = Pairing Code, false = QR Code
   },
 
@@ -25,9 +25,9 @@ const config = {
   },
 
   bot: {
-    name: "𝗢𝗨𝗥𝗜𝗡 𝗠𝗗", // Nama bot
+    name: "justfriend mania", // Nama bot
     version: "3.3.1", // Versi bot
-    developer: "Zann", // Nama developer
+    developer: "pais", // Nama developer
   },
 
   assets: {
